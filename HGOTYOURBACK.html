@@ -1,0 +1,1795 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>H GOT YOUR BACK</title>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        body {
+            background: #000;
+            color: #fff;
+            -webkit-text-size-adjust: 100%;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        .hidden { 
+            display: none !important; 
+        }
+
+        /* Page de connexion */
+        .login-container {
+            height: 100vh;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
+                        url('https://wallpaperaccess.com/full/3658597.jpg');
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            overflow: hidden;
+            padding: 20px;
+        }
+
+        .login-title {
+            font-size: 3em;
+            margin-bottom: 40px;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            text-shadow: 0 0 20px rgba(255,255,255,0.5);
+            text-align: center;
+            color: #fff;
+            position: relative;
+            z-index: 1;
+        }
+
+        .login-box {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 40px;
+            width: 100%;
+            max-width: 400px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            position: relative;
+            z-index: 1;
+        }
+
+        .login-box input {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .login-box input:focus {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.3);
+            outline: none;
+            transform: translateY(-2px);
+        }
+
+        .login-box button {
+            width: 100%;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.15);
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .login-box button:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-2px);
+        }
+
+        .error-message {
+            display: none;
+            color: #ff4444;
+            text-align: center;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+
+        .error-message.show {
+            display: block;
+            animation: shake 0.5s ease;
+        }
+
+        /* Animations */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+
+        @keyframes profileAppear {
+            from {
+                opacity: 0;
+                transform: scale(0.9) translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        /* Sélection des profils */
+        .profiles-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)),
+                        url('https://wallpaperaccess.com/full/3658597.jpg');
+            background-size: cover;
+            background-position: center;
+            padding: 40px 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .profiles-title {
+            font-size: 2.5em;
+            color: #fff;
+            margin-bottom: 50px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            text-align: center;
+            text-shadow: 0 0 20px rgba(255,255,255,0.3);
+            animation: fadeInDown 0.8s ease;
+        }
+
+        .profiles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 30px;
+            max-width: 800px;
+            width: 100%;
+            padding: 20px;
+        }
+
+        .profile {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            opacity: 0;
+            animation: profileAppear 0.5s ease forwards;
+        }
+
+        .profile:nth-child(1) { animation-delay: 0.1s; }
+        .profile:nth-child(2) { animation-delay: 0.2s; }
+        .profile:nth-child(3) { animation-delay: 0.3s; }
+        .profile:nth-child(4) { animation-delay: 0.4s; }
+
+        .profile:hover {
+            transform: scale(1.05);
+        }
+
+        .profile-avatar {
+            width: 140px;
+            height: 140px;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 3px solid transparent;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+
+        .profile-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .profile:hover .profile-avatar {
+            border-color: #fff;
+            box-shadow: 0 12px 30px rgba(255,255,255,0.2);
+        }
+
+        .profile:hover .profile-avatar img {
+            transform: scale(1.1);
+        }
+
+        .profile-name {
+            margin-top: 15px;
+            font-size: 1.2em;
+            color: #fff;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.5);
+            transition: all 0.3s ease;
+            opacity: 0.8;
+        }
+
+        .profile:hover .profile-name {
+            opacity: 1;
+            transform: translateY(3px);
+        }
+
+        /* Code PIN */
+        .pin-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.95);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .pin-box {
+            background: rgba(20, 20, 20, 0.95);
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            animation: scaleIn 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+            width: 90%;
+            max-width: 400px;
+        }
+
+        .pin-box h3 {
+            font-size: 1.5em;
+            margin-bottom: 30px;
+            color: #fff;
+        }
+
+        .pin-input {
+            display: flex;
+            gap: 15px;
+            margin: 30px 0;
+            justify-content: center;
+        }
+
+        .pin-digit {
+            width: 55px;
+            height: 55px;
+            text-align: center;
+            font-size: 24px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .pin-digit:focus {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.3);
+            outline: none;
+            transform: scale(1.05);
+        }
+
+        .pin-error {
+            color: #ff4444;
+            margin-top: 15px;
+            display: none;
+        }
+
+        .pin-error.show {
+            display: block;
+            animation: shake 0.5s ease;
+        }
+
+        /* Interface principale */
+        .main-container {
+            min-height: 100vh;
+            padding: 20px;
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
+                        url('https://wallpaperaccess.com/full/329633.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+        /* Navigation et recherche */
+        .type-selector {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin: 20px auto;
+            max-width: 500px;
+        }
+
+        .type-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1em;
+            backdrop-filter: blur(5px);
+            flex: 1;
+            text-align: center;
+        }
+
+        .type-btn.active {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+        }
+
+        .add-button {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: #fff;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .add-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.1);
+        }
+
+        /* Code PIN */
+        .pin-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.95);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .pin-box {
+            background: rgba(20, 20, 20, 0.95);
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            animation: scaleIn 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+            width: 90%;
+            max-width: 400px;
+        }
+
+        .pin-box h3 {
+            font-size: 1.5em;
+            margin-bottom: 30px;
+            color: #fff;
+        }
+
+        .pin-input {
+            display: flex;
+            gap: 15px;
+            margin: 30px 0;
+            justify-content: center;
+        }
+
+        .pin-digit {
+            width: 55px;
+            height: 55px;
+            text-align: center;
+            font-size: 24px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .pin-digit:focus {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.3);
+            outline: none;
+            transform: scale(1.05);
+        }
+
+        .pin-error {
+            color: #ff4444;
+            margin-top: 15px;
+            display: none;
+        }
+
+        .pin-error.show {
+            display: block;
+            animation: shake 0.5s ease;
+        }
+
+        /* Interface principale */
+        .main-container {
+            min-height: 100vh;
+            padding: 20px;
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
+                        url('https://wallpaperaccess.com/full/329633.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+        /* Navigation et recherche */
+        .type-selector {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin: 20px auto;
+            max-width: 500px;
+        }
+
+        .type-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1em;
+            backdrop-filter: blur(5px);
+            flex: 1;
+            text-align: center;
+        }
+
+        .type-btn.active {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+        }
+
+        .add-button {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: #fff;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .add-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.1);
+        }
+
+        /* Conteneur de recherche */
+        .search-container {
+            max-width: 700px;
+            margin: 20px auto;
+            padding: 25px;
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .search-container input {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            color: #fff;
+            font-size: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .search-container input:focus {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.3);
+            outline: none;
+            transform: translateY(-2px);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .watch-btn {
+            flex: 1;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.15);
+            border: none;
+            border-radius: 6px;
+            color: #fff;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .watch-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-2px);
+        }
+
+        .language-btn {
+            padding: 12px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 6px;
+            color: #fff;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .language-btn.active {
+            background: rgba(255, 255, 255, 0.25);
+            transform: scale(1.05);
+        }
+
+        /* Lecteur vidéo */
+        .player-container {
+            max-width: 1000px;
+            margin: 20px auto;
+            background: rgba(0, 0, 0, 0.9);
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        #videoPlayer {
+            width: 100%;
+            aspect-ratio: 16/9;
+            background: #000;
+        }
+
+        /* Contrôles vidéo natifs */
+        #videoPlayer::-webkit-media-controls-panel {
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+        }
+
+        #videoPlayer::-webkit-media-controls-play-button,
+        #videoPlayer::-webkit-media-controls-timeline,
+        #videoPlayer::-webkit-media-controls-current-time-display,
+        #videoPlayer::-webkit-media-controls-time-remaining-display,
+        #videoPlayer::-webkit-media-controls-mute-button,
+        #videoPlayer::-webkit-media-controls-volume-slider,
+        #videoPlayer::-webkit-media-controls-fullscreen-button {
+            display: block;
+        }
+
+        #videoPlayer::-webkit-media-controls-volume-slider {
+            display: flex;
+        }
+
+        /* Section personnalisée pour le lien m3u8 */
+        #customLinkSearch {
+            padding: 20px;
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.6);
+        }
+
+        #customLinkSearch input {
+            margin-bottom: 15px;
+        }
+
+        /* TV Container */
+        .tv-container {
+            padding: 20px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .tv-categories {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .category-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            padding: 10px 20px;
+            color: white;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 15px;
+        }
+
+        .category-btn.active {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.05);
+        }
+
+        .channels-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .channel-card {
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 10px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .channel-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .channel-logo {
+            width: 100%;
+            height: 120px;
+            object-fit: contain;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 10px;
+        }
+
+        .channel-info {
+            padding: 15px;
+            text-align: center;
+        }
+
+        .channel-name {
+            color: white;
+            font-size: 1.1em;
+            margin: 0;
+        }
+
+        /* Popups */
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            z-index: 999;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .custom-link-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.95);
+            padding: 25px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 450px;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            animation: scaleIn 0.3s ease;
+        }
+
+        .popup-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .popup-title {
+            font-size: 1.3em;
+            color: #fff;
+        }
+
+        .popup-close {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .popup-close:hover {
+            transform: scale(1.1);
+        }
+
+        .popup-content {
+            color: #fff;
+            font-size: 0.95em;
+            line-height: 1.5;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .login-title { 
+                font-size: 2.2em; 
+            }
+            
+            .profiles-grid { 
+                grid-template-columns: repeat(2, 1fr); 
+            }
+            
+            .profile-avatar { 
+                width: 120px; 
+                height: 120px; 
+            }
+            
+            .type-selector { 
+                flex-wrap: wrap; 
+            }
+            
+            .search-container { 
+                padding: 20px; 
+            }
+            
+            .channels-grid { 
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); 
+            }
+            
+            .channel-logo { 
+                height: 90px; 
+            }
+
+            .button-group {
+                flex-wrap: wrap;
+            }
+
+            .watch-btn, .language-btn {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .login-title { 
+                font-size: 1.8em; 
+            }
+            
+            .profiles-grid { 
+                grid-template-columns: 1fr; 
+            }
+            
+            .type-btn { 
+                padding: 8px 15px; 
+                font-size: 0.9em; 
+            }
+            
+            .tv-categories { 
+                flex-direction: column; 
+            }
+            
+            .category-btn { 
+                width: 100%; 
+            }
+
+            .pin-digit {
+                width: 45px;
+                height: 45px;
+                font-size: 20px;
+            }
+
+            .custom-link-popup {
+                width: 95%;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Page de connexion -->
+    <div class="login-container" id="loginContainer">
+        <h1 class="login-title">H GOT YOUR BACK</h1>
+        <div class="login-box">
+            <form id="loginForm">
+                <input type="text" id="username" placeholder="Username" autocomplete="off" required>
+                <input type="password" id="password" placeholder="Password" required>
+                <button type="submit" class="watch-btn">Connexion</button>
+                <div class="error-message" id="errorMessage">Identifiants incorrects</div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Sélection des profils -->
+    <div class="profiles-container hidden" id="profilesContainer">
+        <h2 class="profiles-title">Qui regarde ?</h2>
+        <div class="profiles-grid">
+            <div class="profile" data-pin="2205">
+                <div class="profile-avatar">
+                    <img src="https://i.pinimg.com/736x/c7/8f/e7/c78fe7a9502894235b5371adab76d659.jpg" alt="Hichem">
+                </div>
+                <span class="profile-name">Hichem</span>
+            </div>
+            <div class="profile" data-pin="2727">
+                <div class="profile-avatar">
+                    <img src="https://i.pinimg.com/736x/d5/78/b2/d578b227f4e14dc3ee826cc105a4797a.jpg" alt="Blayk">
+                </div>
+                <span class="profile-name">Blayk</span>
+            </div>
+            <div class="profile" data-pin="0000">
+                <div class="profile-avatar">
+                    <img src="https://i.pinimg.com/736x/00/c5/93/00c5933fbe0d2a7117d4bf0d8c8214d8.jpg" alt="Fa & Youss">
+                </div>
+                <span class="profile-name">Fa & Youss</span>
+            </div>
+            <div class="profile" data-pin="2512">
+                <div class="profile-avatar">
+                    <img src="https://i.pinimg.com/736x/f9/d3/83/f9d383aaed251585e58fe175a92088b8.jpg" alt="Halim">
+                </div>
+                <span class="profile-name">Halim</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Écran de PIN -->
+    <div class="pin-container hidden" id="pinContainer">
+        <div class="pin-box">
+            <h3>Entrez votre code PIN</h3>
+            <div class="pin-input">
+                <input type="password" maxlength="1" class="pin-digit" autofocus>
+                <input type="password" maxlength="1" class="pin-digit">
+                <input type="password" maxlength="1" class="pin-digit">
+                <input type="password" maxlength="1" class="pin-digit">
+            </div>
+            <p class="pin-error" id="pinError">Code PIN incorrect</p>
+        </div>
+    </div>
+
+    <!-- Interface principale -->
+    <div class="main-container hidden" id="mainContainer">
+        <div class="type-selector">
+            <button class="type-btn active" data-type="series">Séries</button>
+            <button class="type-btn" data-type="films">Films</button>
+            <button class="type-btn" data-type="tv">TV</button>
+            <button class="add-button" onclick="showM3u8Popup()">+</button>
+        </div>
+
+        <div class="search-container">
+            <!-- Recherche séries -->
+            <div class="search-section" id="seriesSearch">
+                <input type="text" id="seriesName" placeholder="Nom de la série">
+                <input type="number" id="seasonNumber" placeholder="Saison">
+                <input type="number" id="episodeNumber" placeholder="Épisode">
+                <div class="button-group">
+                    <button onclick="loadSeries()" class="watch-btn">Regarder</button>
+                    <button onclick="setAudioTrack('vf')" class="language-btn active">VF</button>
+                    <button onclick="setAudioTrack('vo')" class="language-btn">VO</button>
+                </div>
+            </div>
+
+            <!-- Recherche films -->
+            <div class="search-section hidden" id="filmsSearch">
+                <input type="text" id="filmName" placeholder="Nom du film">
+                <div class="button-group">
+                    <button onclick="loadMovie()" class="watch-btn">Regarder</button>
+                    <button onclick="setAudioTrack('vf')" class="language-btn active">VF</button>
+                    <button onclick="setAudioTrack('vo')" class="language-btn">VO</button>
+                </div>
+            </div>
+
+            <!-- Lien personnalisé -->
+            <div class="search-section hidden" id="customLinkSearch">
+                <input type="text" id="customUrl" placeholder="Entrez votre lien">
+                <div class="button-group">
+                    <button onclick="loadCustomLink()" class="watch-btn">Regarder</button>
+                </div>
+            </div>
+
+            <!-- Section TV -->
+            <div class="tv-container hidden" id="tvContainer">
+                <div class="tv-categories">
+                    <button class="category-btn active" data-category="TNT">TNT</button>
+                    <button class="category-btn" data-category="Sport">Sport</button>
+                    <button class="category-btn" data-category="Cinema">Cinéma</button>
+                    <button class="category-btn" data-category="Jeunesse">Jeunesse</button>
+                    <button class="category-btn" data-category="Documentaire">Documentaire</button>
+                    <button class="category-btn" data-category="Information">Information</button>
+                    <button class="category-btn" data-category="Musique">Musique</button>
+                </div>
+                <div class="channels-grid" id="channelsGrid"></div>
+            </div>
+        </div>
+
+        <!-- Lecteur vidéo -->
+        <div class="player-container">
+            <video id="videoPlayer" controls playsinline>
+                <p>Votre navigateur ne supporte pas la lecture vidéo HTML5.</p>
+            </video>
+        </div>
+    </div>
+
+    <!-- Popup de bienvenue -->
+    <div class="popup-overlay hidden" id="welcomePopup">
+        <div class="custom-link-popup">
+            <div class="popup-header">
+                <h3 class="popup-title">Bienvenue !</h3>
+                <button class="popup-close" onclick="closePopup()">×</button>
+            </div>
+            <div class="popup-content">
+                <p>Bienvenue sur H GOT YOUR BACK !</p>
+                <p>Pour les séries et films, veuillez entrer les noms en MAJUSCULES et sans espaces.</p>
+                <p>Exemple : BREAKINGBAD, GAMEOFTHRONES, INCEPTION</p>
+                <button class="watch-btn" onclick="closePopup()" style="margin-top: 20px;">J'ai compris</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Popup de lien personnalisé -->
+    <div class="popup-overlay hidden" id="m3u8Popup">
+        <div class="custom-link-popup">
+            <div class="popup-header">
+                <h3 class="popup-title">Lien personnalisé</h3>
+                <button class="popup-close" onclick="closeM3u8Popup()">×</button>
+            </div>
+            <div class="popup-content">
+                <p>Pour avoir un lien précis, veuillez contacter le créateur du site via Discord.</p>
+                <div class="button-group" style="margin-top: 20px;">
+                    <button class="watch-btn" onclick="showCustomLinkInput()">Continuer</button>
+                    <button class="watch-btn" onclick="closeM3u8Popup()" 
+                        style="background: rgba(255, 0, 0, 0.2);">Annuler</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration initiale
+        const baseUrlSeries = 'https://01.maltasilly.one/d1b7e9a4-5c8a-4f1d-b3a2-f7c9e6b4a2d5';
+        const baseUrlMovies = 'https://01.maltasilly.one/c5e8b0f2-9a1d-4c3a-8e2a-cd1f4f7b7b30';
+        let hls = null;
+        let currentAudioTrack = 'vf';
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+        });
+
+        function initializeApp() {
+            setupLoginForm();
+            setupProfileSelection();
+            setupTVCategories();
+            setupMediaControls();
+            setupTypeSelector();
+        }
+
+        // Gestion de la connexion
+        function setupLoginForm() {
+            document.getElementById('loginForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const username = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
+                const errorMessage = document.getElementById('errorMessage');
+                const loginButton = e.target.querySelector('button');
+
+                loginButton.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    loginButton.style.transform = 'scale(1)';
+                }, 100);
+
+                if (username === 'Admin' && password === 'Hfree') {
+                    errorMessage.classList.remove('show');
+                    document.getElementById('loginContainer').classList.add('hidden');
+                    document.getElementById('profilesContainer').classList.remove('hidden');
+                } else {
+                    errorMessage.classList.add('show');
+                    const loginBox = document.querySelector('.login-box');
+                    loginBox.style.animation = 'shake 0.5s ease';
+                    setTimeout(() => {
+                        loginBox.style.animation = '';
+                    }, 500);
+                }
+            });
+        }
+
+        // Gestion des profils et du PIN
+        function setupProfileSelection() {
+            document.querySelectorAll('.profile').forEach(profile => {
+                profile.addEventListener('click', function() {
+                    const pin = this.dataset.pin;
+                    showPinScreen(pin);
+                });
+            });
+        }
+
+        function showPinScreen(expectedPin) {
+            document.getElementById('pinContainer').classList.remove('hidden');
+            const inputs = document.querySelectorAll('.pin-digit');
+            const errorMsg = document.getElementById('pinError');
+            
+            // Reset des inputs
+            inputs.forEach(input => {
+                input.value = '';
+                input.addEventListener('input', handlePinInput);
+                input.addEventListener('keydown', handlePinKeydown);
+            });
+            
+            inputs[0].focus();
+
+            function handlePinInput(e) {
+                if (e.target.value) {
+                    const index = Array.from(inputs).indexOf(e.target);
+                    if (index < inputs.length - 1) {
+                        inputs[index + 1].focus();
+                    }
+                    checkPin();
+                }
+            }
+
+            function handlePinKeydown(e) {
+                if (e.key === 'Backspace' && !e.target.value) {
+                    const index = Array.from(inputs).indexOf(e.target);
+                    if (index > 0) {
+                        inputs[index - 1].focus();
+                    }
+                }
+            }
+
+            function checkPin() {
+                const enteredPin = Array.from(inputs).map(input => input.value).join('');
+                if (enteredPin.length === 4) {
+                    if (enteredPin === expectedPin) {
+                        document.getElementById('pinContainer').classList.add('hidden');
+                        document.getElementById('profilesContainer').classList.add('hidden');
+                        document.getElementById('mainContainer').classList.remove('hidden');
+                        showPopup();
+                        displayChannels('TNT');
+                    } else {
+                        errorMsg.classList.add('show');
+                        inputs.forEach(input => {
+                            input.value = '';
+                            input.classList.add('error');
+                        });
+                        inputs[0].focus();
+                        setTimeout(() => {
+                            errorMsg.classList.remove('show');
+                            inputs.forEach(input => input.classList.remove('error'));
+                        }, 3000);
+                    }
+                }
+            }
+        }
+
+        // Gestion de la navigation
+        function setupTypeSelector() {
+            document.querySelectorAll('.type-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const type = this.dataset.type;
+                    
+                    // Mise à jour des boutons
+                    document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Cacher toutes les sections
+                    document.getElementById('seriesSearch').classList.add('hidden');
+                    document.getElementById('filmsSearch').classList.add('hidden');
+                    document.getElementById('tvContainer').classList.add('hidden');
+                    document.getElementById('customLinkSearch').classList.add('hidden');
+                    
+                    // Afficher la section appropriée
+                    if (type === 'series') {
+                        document.getElementById('seriesSearch').classList.remove('hidden');
+                    } else if (type === 'films') {
+                        document.getElementById('filmsSearch').classList.remove('hidden');
+                    } else if (type === 'tv') {
+                        document.getElementById('tvContainer').classList.remove('hidden');
+                        displayChannels('TNT');
+                    }
+                });
+            });
+        }
+
+        // Gestion des popups
+        function showPopup() {
+            document.getElementById('welcomePopup').classList.remove('hidden');
+        }
+
+        function closePopup() {
+            document.getElementById('welcomePopup').classList.add('hidden');
+        }
+
+        function showM3u8Popup() {
+            document.getElementById('m3u8Popup').classList.remove('hidden');
+        }
+
+        function closeM3u8Popup() {
+            document.getElementById('m3u8Popup').classList.add('hidden');
+        }
+
+        function showCustomLinkInput() {
+            closeM3u8Popup();
+            document.querySelectorAll('.type-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById('seriesSearch').classList.add('hidden');
+            document.getElementById('filmsSearch').classList.add('hidden');
+            document.getElementById('tvContainer').classList.add('hidden');
+            document.getElementById('customLinkSearch').classList.remove('hidden');
+        }
+
+        // Gestion du lecteur vidéo
+        function loadSeries() {
+            const seriesName = document.getElementById('seriesName').value.toUpperCase();
+            const season = document.getElementById('seasonNumber').value.padStart(1, '0');
+            const episode = document.getElementById('episodeNumber').value.padStart(2, '0');
+            const url = `${baseUrlSeries}/${seriesName}/S${season}/${episode}/playlist.m3u8`;
+            loadChannel(url);
+        }
+
+        function loadMovie() {
+            const movieName = document.getElementById('filmName').value.toUpperCase();
+            const url = `${baseUrlMovies}/${movieName}/playlist.m3u8`;
+            loadChannel(url);
+        }
+
+        function loadCustomLink() {
+            const customUrl = document.getElementById('customUrl').value;
+            if (customUrl) {
+                loadChannel(customUrl);
+            }
+        }
+
+        function loadChannel(url) {
+            const video = document.getElementById('videoPlayer');
+            
+            if (Hls.isSupported()) {
+                if (hls) {
+                    hls.destroy();
+                }
+                
+                hls = new Hls({
+                    maxBufferLength: 30,
+                    maxMaxBufferLength: 60,
+                    manifestLoadingTimeOut: 10000,
+                    manifestLoadingMaxRetry: 5,
+                    manifestLoadingRetryDelay: 1000,
+                    levelLoadingTimeOut: 10000,
+                    levelLoadingMaxRetry: 4,
+                    levelLoadingRetryDelay: 1000,
+                    fragLoadingTimeOut: 20000,
+                    fragLoadingMaxRetry: 6,
+                    fragLoadingRetryDelay: 1000,
+                    enableWorker: true,
+                    startLevel: -1,
+                    defaultAudioCodec: 'mp4a.40.2',
+                    debug: false
+                });
+
+                hls.attachMedia(video);
+                hls.loadSource(url);
+                
+                hls.on(Hls.Events.MANIFEST_PARSED, function() {
+                    video.play().catch(function(error) {
+                        console.log("Lecture automatique impossible:", error);
+                    });
+                });
+
+                hls.on(Hls.Events.ERROR, function(event, data) {
+                    if (data.fatal) {
+                        switch(data.type) {
+                            case Hls.ErrorTypes.NETWORK_ERROR:
+                                console.log("Erreur réseau, tentative de reconnexion...");
+                                hls.startLoad();
+                                break;
+                            case Hls.ErrorTypes.MEDIA_ERROR:
+                                console.log("Erreur média, tentative de récupération...");
+                                hls.recoverMediaError();
+                                break;
+                            default:
+                                console.log("Erreur fatale, impossible de récupérer");
+                                hls.destroy();
+                                break;
+                        }
+                    }
+                });
+            }
+            else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                video.src = url;
+                video.addEventListener('loadedmetadata', function() {
+                    video.play();
+                });
+            }
+        }
+
+        // Gestion des contrôles média
+        function setupMediaControls() {
+            const video = document.getElementById('videoPlayer');
+
+            // Raccourcis clavier
+            document.addEventListener('keydown', function(e) {
+                if (document.activeElement.tagName !== 'INPUT' && video) {
+                    switch(e.key) {
+                        case 'ArrowLeft':
+                            video.currentTime -= 10;
+                            e.preventDefault();
+                            break;
+                        case 'ArrowRight':
+                            video.currentTime += 10;
+                            e.preventDefault();
+                            break;
+                        case ' ':
+                            if (video.paused) video.play();
+                            else video.pause();
+                            e.preventDefault();
+                            break;
+                        case 'f':
+                            toggleFullscreen(video);
+                            e.preventDefault();
+                            break;
+                        case 'm':
+                            video.muted = !video.muted;
+                            e.preventDefault();
+                            break;
+                        case 'ArrowUp':
+                            if (video.volume < 1) video.volume = Math.min(1, video.volume + 0.1);
+                            e.preventDefault();
+                            break;
+                        case 'ArrowDown':
+                            if (video.volume > 0) video.volume = Math.max(0, video.volume - 0.1);
+                            e.preventDefault();
+                            break;
+                    }
+                }
+            });
+
+            // Double-clic pour plein écran
+            video.addEventListener('dblclick', function() {
+                toggleFullscreen(video);
+            });
+
+            // Gestion des erreurs de lecture
+            video.addEventListener('error', function(e) {
+                console.error('Erreur de lecture vidéo:', e);
+                if (hls && hls.url) {
+                    setTimeout(() => {
+                        loadChannel(hls.url);
+                    }, 5000);
+                }
+            });
+        }
+
+        function toggleFullscreen(element) {
+            if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+                if (element.requestFullscreen) {
+                    element.requestFullscreen();
+                } else if (element.webkitRequestFullscreen) {
+                    element.webkitRequestFullscreen();
+                }
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                }
+            }
+        }
+
+        // Gestion des pistes audio
+        function setAudioTrack(language) {
+            currentAudioTrack = language;
+            document.querySelectorAll('.language-btn').forEach(btn => 
+                btn.classList.toggle('active', 
+                    btn.textContent.toLowerCase().includes(language)));
+
+            if (hls && hls.audioTracks) {
+                setPreferredAudioTrack(hls.audioTracks);
+            }
+        }
+
+        function setPreferredAudioTrack(audioTracks) {
+            let trackIndex = audioTracks.findIndex(track => {
+                const trackName = track.name.toLowerCase();
+                return currentAudioTrack === 'vf' ?
+                    (trackName.includes('français') || trackName.includes('french') || 
+                     trackName.includes('vf')) :
+                    (trackName.includes('original') || trackName.includes('english') || 
+                     trackName.includes('vo'));
+            });
+            
+            if (trackIndex !== -1) {
+                hls.audioTrack = trackIndex;
+            }
+        }
+
+        // Gestion des chaînes TV
+        function setupTVCategories() {
+            const categoryButtons = document.querySelectorAll('.category-btn');
+            categoryButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    categoryButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    displayChannels(button.dataset.category);
+                });
+            });
+        }
+
+        function displayChannels(category) {
+            const channelsGrid = document.getElementById('channelsGrid');
+            channelsGrid.innerHTML = '';
+
+            TV_CHANNELS[category].forEach(channel => {
+                const channelCard = createChannelCard(channel);
+                channelsGrid.appendChild(channelCard);
+            });
+        }
+
+        function createChannelCard(channel) {
+            const card = document.createElement('div');
+            card.className = 'channel-card';
+            card.innerHTML = `
+                <img src="${channel.logo}" alt="${channel.name}" class="channel-logo" 
+                    onerror="this.src='https://via.placeholder.com/150?text=${channel.name}'">
+                <div class="channel-info">
+                    <h3 class="channel-name">${channel.name}</h3>
+                </div>
+            `;
+            
+            card.addEventListener('click', () => {
+                loadChannel(channel.url);
+                // Scroll vers le lecteur vidéo
+                document.querySelector('.player-container').scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            });
+
+            return card;
+        }
+
+        // Données des chaînes TV
+        const TV_CHANNELS = {
+            TNT: [
+                {
+                    name: "TF1",
+                    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Logo_TF1_2013.svg/1200px-Logo_TF1_2013.svg.png",
+                    url: "https://iptv1.french-live.lol:443/live/70013B23F3440093B75C4C8CF5C5C84D/87.m3u8"
+                },
+                {
+                    name: "France 2",
+                    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/France_2_2018.svg/640px-France_2_2018.svg.png",
+                    url: "https://iptv1.french-live.lol:443/live/70013B23F3440093B75C4C8CF5C5C84D/137.m3u8"
+                },
+                {
+                    name: "France 3",
+                    logo: "https://logowik.com/content/uploads/images/france-39793.logowik.com.webp",
+                    url: "https://iptv1.french-live.lol:443/live/70013B23F3440093B75C4C8CF5C5C84D/138.m3u8"
+                },
+                {
+                    name: "TMC",
+                    logo: "https://upload.wikimedia.org/wikipedia/fr/thumb/a/a8/TMC_logo_2016.svg/2560px-TMC_logo_2016.svg.png",
+                    url: "https://iptv1.french-live.lol:443/live/70013B23F3440093B75C4C8CF5C5C84D/78.m3u8"
+                },
+                {
+                    name: "TFX",
+                    logo: "https://upload.wikimedia.org/wikipedia/fr/thumb/8/83/TFX_logo_2018.svg/2560px-TFX_logo_2018.svg.png",
+                    url: "https://iptv1.french-live.lol:443/live/70013B23F3440093B75C4C8CF5C5C84D/77.m3u8"
+                },
+                {
+                    name: "M6",
+                    logo: "https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/ce56cfe9-0ead-4884-ba26-926fb45f52b7/dfo17a0-1d5d923e-c864-4060-8412-8cdc2ca025f2.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcL2NlNTZjZmU5LTBlYWQtNDg4NC1iYTI2LTkyNmZiNDVmNTJiN1wvZGZvMTdhMC0xZDVkOTIzZS1jODY0LTQwNjAtODQxMi04Y2RjMmNhMDI1ZjIucG5nIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.s3w9gZpURoSdykqEShhKFIa_m0u43UXoTm8Fm7qqXHQ",
+                    url: "https://iptv1.french-live.lol:443/live/70013B23F3440093B75C4C8CF5C5C84D/102.m3u8"
+                },
+                {
+                    name: "W9",
+                    logo: "https://logowik.com/content/uploads/images/w93639.logowik.com.webp",
+                    url: "https://iptv1.french-live.lol:443/live/70013B23F3440093B75C4C8CF5C5C84D/79.m3u8"
+                },
+                {
+                    name: "C8",
+                    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/Logo_C8_2016.svg/1200px-Logo_C8_2016.svg.png",
+                    url: "https://iptv1.french-live.lol:443/live/70013B23F3440093B75C4C8CF5C5C84D/204.m3u8"
+                },
+                {
+                    name: "6ter",
+                    logo: "https://upload.wikimedia.org/wikipedia/commons/0/07/6ter.png",
+                    url: "https://iptv1.french-live.lol:443/live/70013B23F3440093B75C4C8CF5C5C84D/159.m3u8"
+                },
+                {
+                    name: "NRJ 12",
+                    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/NRJ12_logo_2015.svg/1200px-NRJ12_logo_2015.svg.png",
+                    url: "https://iptv1.french-live.lol:443/live/70013B23F3440093B75C4C8CF5C5C84D/235.m3u8"
+                }
+            ],
+            Cinema: [
+                {
+                    name: "Canal+",
+                    logo: "https://cdn.worldvectorlogo.com/logos/canal.svg",
+                    url: "https://iptv1.french-live.lol:443/live/70013B23F3440093B75C4C8CF5C5C84D/106.m3u8"
+                },
+                {
+                    name: "Canal+ Family",
+                    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/Logo_Canal%2B_Family_2013.svg/1200px-Logo_Canal%2B_Family_2013.svg.png",
+                    url: "https://iptv1.french-live.lol:443/live/70013B23F3440093B75C4C8CF5C5C84D/198.m3u8"
+                },
+                {
+                    name: "Canal+ Cinéma",
+                    logo: "https://logowik.com/content/uploads/images/canal-cinema9368.logowik.com.webp",
+                    url: "https://iptv1.french-live.lol:443/live/70013B23F3440093B75C4C8CF5C5C84D/139.m3u8"
+                },
+                {
+                    name: "Ciné+ Frisson",
+                    logo: "https://www.planetecsat.com/wp-content/uploads/2024/05/logo-cinefrisson.png",
+                    url: "https://iptv1.french-live.lol:443/live/70013B23F3440093B75C4C8CF5C5C84D/201.m3u8"
+                },
+                {
+                    name: "Ciné+ Émotion",
+                    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Cin%C3%A9%2B%C3%89motion2024.svg/1024px-Cin%C3%A9%2B%C3%89motion2024.svg.png",
+                    url: "https://iptv1.french-live.lol:443/live/70013B23F3440093B75C4C8CF5C5C84D/200.m3u8"
+                },
+                {
+                    name: "TF1 Séries Films",
+                    logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTAjGGlkzyHPK6GQuXBENMWsDwaYe7ECkLwGw&s",
+                    url: "https://iptv1.french-live.lol:443/live/70013B23F3440093B75C4C8CF5C5C84D/215.m3u8"
+                },
+                {
+                    name: "TCM",
+                    logo: "https://vectorlogoseek.com/wp-content/uploads/2019/08/canal-tcm-vector-logo.png",
+                    url: "https://iptv1.french-live.lol:443/live/70013B23F3440093B75C4C8CF5C5C84D/95.m3u8"
+                },
+                {
+                    name: "Warner TV",
+                    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Warner_TV_Italy.svg/1200px-Warner_TV_Italy.svg.png",
+                    url: "https://iptv1.french-live.lol:443/live/70013B23F3440093B75C4C8CF5C5C84D/183.m3u8"
+                },
+                {
+                    name: "OCS City",
+                    logo: "https://upload.wikimedia.org/wikipedia/fr/thumb/6/6d/OCS_City.svg/2560px-OCS_City.svg.png",
+                    url: "https://iptv1.french-live.lol:443/live/70013B23F3440093B75C4C8CF5C5C84D/156.m3u8"
+                }
+            ],
+            Sport: [
+                {
+                    name: "BeIN Sports 1",
+                    logo: "https://logowik.com/content/uploads/images/bein-sports-13097.logowik.com.webp",
+                    url: "https://iptv1.french-live.lol:443/live/70013B23F3440093B75C4C8CF5C5C84D/44.m3u8"
+                },
+                {
+                    name: "BeIN Sports 2",
+                    logo: "https://logowik.com/content/uploads/images/bein-sports-25584.logowik.com.webp",
+                    url: "https://iptv1.french-live.lol:443/live/70013B23F3440093B75C4C8CF5C5C84D/167.m3u8"
+                },
+                {
+                    name: "BeIN Sports 3",
+                    logo: "https://upload.wikimedia.org/wikipedia/commons/e/e9/BeIN_Sports_3_HD.png",
+                    url: "https://iptv1.french-live.lol:443/live/70013B23F3440093B75C4C8CF5C5C84D/50.m3u8"
+                },
+                {
+                    name: "Canal+ Sport",
+                    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fc/Logo_Canal%2B_Sport_2009.svg/2560px-Logo_Canal%2B_Sport_2009.svg.png",
+                    url: "https://iptv1.french-live.lol:443/live/70013B23F3440093B75C4C8CF5C5C84D/54.m3u8"
+                },
+                {
+                    name: "Canal+ 360",
+                    logo: "https://upload.wikimedia.org/wikipedia/commons/6/64/Canal%2BSport_360.png",
+                    url: "https://iptv1.french-live.lol:443/live/70013B23F3440093B75C4C8CF5C5C84D/58.m3u8"
+                },
+                {
+                    name: "Canal+ Foot",
+                    logo: "https://upload.wikimedia.org/wikipedia/commons/e/eb/Canal%2BFoot.png",
+                    url: "https://iptv1.french-live.lol:443/live/70013B23F3440093B75C4C8CF5C5C84D/88.m3u8"
+                },
+                {
+                    name: "RMC Sport 1",
+                    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3b/Logo_RMC_Sport_1_2018.svg/1280px-Logo_RMC_Sport_1_2018.svg.png",
+                    url: "https://iptv1.french-live.lol:443/live/70013B23F3440093B75C4C8CF5C5C84D/33.m3u8"
+                },
+                {
+                    name: "RMC Sport 2",
+                    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Logo_RMC_Sport_2_2018.svg/2560px-Logo_RMC_Sport_2_2018.svg.png",
+                    url: "https://iptv1.french-live.lol:443/live/70013B23F3440093B75C4C8CF5C5C84D/40.m3u8"
+                },
+                {
+                    name: "RMC Sport 3",
+                    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/71/Logo_RMC_Sport_3_2018.svg/2560px-Logo_RMC_Sport_3_2018.svg.png",
+                    url: "https://iptv1.french-live.lol:443/live/70013B23F3440093B75C4C8CF5C5C84D/42.m3u8"
+                },
+                {
+                    name: "DAZN 1",
+                    logo: "https://tvprofil.com/img/kanali-logo/DAZN_1_DE_logo_v2.png?1733405018",
+                    url: "https://iptv1.french-live.lol:443/live/70013B23F3440093B75C4C8CF5C5C84D/150.m3u8"
+                },
+                {
+                    name: "DAZN 2",
+                    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/76/DAZN_2.svg/1200px-DAZN_2.svg.png",
+                    url: "https://iptv1.french-live.lol:443/live/70013B23F3440093B75C4C8CF5C5C84D/151.m3u8"
+                },
+                {
+                    name: "DAZN 3",
+                    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/DAZN_3.svg/1280px-DAZN_3.svg.png",
+                    url: "https://iptv1.french-live.lol:443/live/70013B23F3440093B75C4C8CF5C5C84D/160.m3u8"
+                },
+                {
+                    name: "Canal+ Formula 1",
+                    logo: "https://static.wikia.nocookie.net/logopedia/images/7/71/Canal_Formula1.png/revision/latest?cb=20200324160011",
+                    url: "https://iptv1.french-live.lol:443/live/70013B23F3440093B75C4C8CF5C5C84D/89.m3u8"
+                },
+                {
+                    name: "Canal+ MotoGP",
+                    logo: "https://static.wikia.nocookie.net/logopedia/images/0/01/Canal_MotoGP.png/revision/latest?cb=20200324160151",
+                    url: "https://iptv1.french-live.lol:443/live/70013B23F3440093B75C4C8CF5C5C84D/112.m3u8"
+                },
+                {
+                    name: "L'Équipe 1",
+                    logo: "https://upload.wikimedia.org/wikipedia/commons/4/41/Photo-le-logo-de-l-equipe.jpg",
+                    url: "https://iptv1.french-live.lol:443/live/70013B23F3440093B75C4C8CF5C5C84D/113.m3u8"
+                }
+            ],
+            Jeunesse: [
+                {
+                    name: "Canal J",
+                    logo: "https://upload.wikimedia.org/wikipedia/fr/6/69/Logo_canal_J.png",
+                    url: "https://iptv1.french-live.lol:443/live/70013B23F3440093B75C4C8CF5C5C84D/179.m3u8"
+                },
+                {
+                    name: "Tiji",
+                    logo: "https://upload.wikimedia.org/wikipedia/fr/7/71/TiJi_logo_2016.png",
+                    url: "https://iptv1.french-live.lol:443/live/70013B23F3440093B75C4C8CF5C5C84D/177.m3u8"
+                },
+                {
+                    name: "Télétoon+",
+                    logo: "https://upload.wikimedia.org/wikipedia/commons/a/ab/T%C3%A9l%C3%A9toon%2B_Logo.png",
+                    url: "https://iptv1.french-live.lol:443/live/70013B23F3440093B75C4C8CF5C5C84D/214.m3u8"
+                },
+                {
+                    name: "Nickelodeon",
+                    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Nickelodeon_2023_logo_%28outline%29.svg/1200px-Nickelodeon_2023_logo_%28outline%29.svg.png",
+                    url: "https://iptv1.french-live.lol:443/live/70013B23F3440093B75C4C8CF5C5C84D/178.m3u8"
+                },
+                {
+                    name: "J-One",
+                    logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQQ0IpiqmcgkbHTy1XyR8jl2F_Pmv-XAn1EDg&s",
+                    url: "https://iptv1.french-live.lol:443/live/70013B23F3440093B75C4C8CF5C5C84D/176.m3u8"
+                },
+                {
+                    name: "Gulli",
+                    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/Gulli_logo_2023.png/1200px-Gulli_logo_2023.png",
+                    url: "https://iptv1.french-live.lol:443/live/70013B23F3440093B75C4C8CF5C5C84D/208.m3u8"
+                },
+                {
+                    name: "Disney Channel",
+                    logo: "https://static.wikia.nocookie.net/lemondededisney/images/6/66/DisneyChannel_Logo.png/revision/latest?cb=20231028125407&path-prefix=fr",
+                    url: "https://iptv1.french-live.lol:443/live/70013B23F3440093B75C4C8CF5C5C84D/205.m3u8"
+                },
+                {
+                    name: "Disney Junior",
+                    logo: "https://static.wikia.nocookie.net/disney/images/8/83/Disney_Junior_Logo.png",
+                    url: "https://iptv1.french-live.lol:443/live/70013B23F3440093B75C4C8CF5C5C84D/206.m3u8"
+                },
+                {
+                    name: "Cartoon Network",
+                    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/Cartoon_Network_2010_logo.svg/2560px-Cartoon_Network_2010_logo.svg.png",
+                    url: "https://iptv1.french-live.lol:443/live/70013B23F3440093B75C4C8CF5C5C84D/76.m3u8"
+                },
+                {
+                    name: "Boomerang",
+                    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Boomerang_tv_logo.png/758px-Boomerang_tv_logo.png",
+                    url: "https://iptv1.french-live.lol:443/live/70013B23F3440093B75C4C8CF5C5C84D/180.m3u8"
+                },
+                {
+                    name: "Boing",
+                    logo: "https://static.wikia.nocookie.net/logopedia/images/f/fd/Boing_logo.svg",
+                    url: "https://iptv1.french-live.lol:443/live/70013B23F3440093B75C4C8CF5C5C84D/203.m3u8"
+                },
+                {
+                    name: "Game One",
+                    logo: "https://www.universfreebox.com/wp-content/uploads/2019/07/Gameone.jpg",
+                    url: "https://iptv1.french-live.lol:443/live/70013B23F3440093B75C4C8CF5C5C84D/104.m3u8"
+                },
+                {
+                    name: "Mangas",
+                    logo: "https://upload.wikimedia.org/wikipedia/fr/9/96/Logo-mangaschaine2022.png",
+                    url: "https://iptv1.french-live.lol:443/live/70013B23F3440093B75C4C8CF5C5C84D/97.m3u8"
+                }
+            ],
+            Documentaire: [
+                {
+                    name: "RMC Découverte",
+                    logo: "https://yt3.googleusercontent.com/dHACDvb38ndCt_J_tqwK4OZd2HzjguoI-iczTW8_irr3xILcxgV5YlY3c8vZDaY4oW3OiQJVP08=s900-c-k-c0x00ffffff-no-rj",
+                    url: "https://iptv1.french-live.lol:443/live/70013B23F3440093B75C4C8CF5C5C84D/90.m3u8"
+                },
+                {
+                    name: "Animaux TV",
+                    logo: "https://upload.wikimedia.org/wikipedia/fr/thumb/a/a2/Logo-Animaux-2017.svg/2560px-Logo-Animaux-2017.svg.png",
+                    url: "https://iptv1.french-live.lol:443/live/70013B23F3440093B75C4C8CF5C5C84D/239.m3u8"
+                },
+                {
+                    name: "Planète+ Aventure",
+                    logo: "https://upload.wikimedia.org/wikipedia/fr/archive/f/f6/20241030103117%21Planeteplusaventure.png",
+                    url: "https://iptv1.french-live.lol:443/live/70013B23F3440093B75C4C8CF5C5C84D/187.m3u8"
+                },
+                {
+                    name: "National Geographic",
+                    logo: "https://greyboxcreativemain.b-cdn.net/wp-content/uploads/2020/01/National-Geographic-logo.jpg",
+                    url: "https://iptv1.french-live.lol:443/live/70013B23F3440093B75C4C8CF5C5C84D/81.m3u8"
+                }
+            ],
+            Information: [
+                {
+                    name: "BFM TV",
+                    logo: "https://yt3.googleusercontent.com/fZqlATDgVfFeHrq4WR_RHzkCvVt74Rj33spkAL-5KbW_v-DZAXMtAY-yVldjT4s4pqPasrXwNBQ=s900-c-k-c0x00ffffff-no-rj",
+                    url: "https://iptv1.french-live.lol:443/live/70013B23F3440093B75C4C8CF5C5C84D/169.m3u8"
+                },
+                {
+                    name: "CNEWS",
+                    logo: "https://upload.wikimedia.org/wikipedia/commons/9/91/Canal_News_logo.png",
+                    url: "https://iptv1.french-live.lol:443/live/70013B23F3440093B75C4C8CF5C5C84D/171.m3u8"
+                },
+                {
+                    name: "Euronews",
+                    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/39/Euronews._2016_alternative_logo.png/800px-Euronews._2016_alternative_logo.png",
+                    url: "https://iptv1.french-live.lol:443/live/70013B23F3440093B75C4C8CF5C5C84D/170.m3u8"
+                },
+                {
+                    name: "France 24",
+                    logo: "https://upload.wikimedia.org/wikipedia/fr/thumb/2/24/Logos_FRANCE24_RVB_2013.svg/1200px-Logos_FRANCE24_RVB_2013.svg.png",
+                    url: "https://iptv1.french-live.lol:443/live/70013B23F3440093B75C4C8CF5C5C84D/173.m3u8"
+                }
+            ],
+            Musique: [
+                {
+                    name: "M6 Music",
+                    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b2/Logo-M6music.svg/2560px-Logo-M6music.svg.png",
+                    url: "https://iptv1.french-live.lol:443/live/70013B23F3440093B75C4C8CF5C5C84D/110.m3u8"
+                },
+                {
+                    name: "MTV",
+                    logo: "https://upload.wikimedia.org/wikipedia/commons/6/68/MTV_2021_%28brand_version%29.svg",
+                    url: "https://iptv1.french-live.lol:443/live/70013B23F3440093B75C4C8CF5C5C84D/111.m3u8"
+                },
+                {
+                    name: "MTV Hits",
+                    logo: "https://media.info/l/o/1/1101.1508556277.png",
+                    url: "https://iptv1.french-live.lol:443/live/70013B23F3440093B75C4C8CF5C5C84D/212.m3u8"
+                },
+                {
+                    name: "NRJ Hits",
+                    logo: "https://upload.wikimedia.org/wikipedia/fr/thumb/3/36/NRJ_Hits_2017.svg/1200px-NRJ_Hits_2017.svg.png",
+                    url: "https://iptv1.french-live.lol:443/live/70013B23F3440093B75C4C8CF5C5C84D/109.m3u8"
+                }
+            ]
+        };
+
+        // Gestion des erreurs globales
+        window.onerror = function(msg, url, lineNo, columnNo, error) {
+            console.error('Erreur:', msg, 'URL:', url, 'Ligne:', lineNo, 'Colonne:', columnNo, 'Erreur:', error);
+            return false;
+        };
+
+        // Gestion de la connexion réseau
+        window.addEventListener('offline', function() {
+            alert('Connexion Internet perdue. Veuillez vérifier votre connexion.');
+        });
+
+        window.addEventListener('online', function() {
+            if (hls && hls.url) {
+                loadChannel(hls.url);
+            }
+        });
+
+        // Initialisation de l'application
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+
+            // Gestion du redimensionnement de la fenêtre
+            let resizeTimeout;
+            window.addEventListener('resize', function() {
+                clearTimeout(resizeTimeout);
+                resizeTimeout = setTimeout(function() {
+                    // Ajuster la disposition si nécessaire
+                    const video = document.getElementById('videoPlayer');
+                    if (video) {
+                        video.style.height = video.offsetWidth * (9/16) + 'px';
+                    }
+                }, 250);
+            });
+
+            // Gestion de la visibilité de la page
+            document.addEventListener('visibilitychange', function() {
+                const video = document.getElementById('videoPlayer');
+                if (document.hidden) {
+                    if (video && !video.paused) {
+                        video.pause();
+                    }
+                }
+            });
+
+            // Prévention de la fermeture accidentelle
+            window.addEventListener('beforeunload', function(e) {
+                const video = document.getElementById('videoPlayer');
+                if (video && !video.paused) {
+                    e.preventDefault();
+                    e.returnValue = '';
+                }
+            });
+        });
+
+        // Fonction utilitaire pour le débogage
+        function debug(message, data = null) {
+            if (data) {
+                console.log(`[DEBUG] ${message}:`, data);
+            } else {
+                console.log(`[DEBUG] ${message}`);
+            }
+        }
+
+        // Gestion des performances
+        const performanceMetrics = {
+            startTime: Date.now(),
+            errors: 0,
+            bufferingEvents: 0
+        };
+
+        function updatePerformanceMetrics(metric, value) {
+            performanceMetrics[metric] = value;
+            debug('Performance mise à jour', performanceMetrics);
+        }
+
+    </script>
+</body>
+</html>
