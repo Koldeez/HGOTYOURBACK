@@ -1807,14 +1807,15 @@
   (function() {
     function detectDevTools() {
       if (window.outerHeight - window.innerHeight > 200 || window.outerWidth - window.innerWidth > 200) {
-        document.documentElement.innerHTML = ""; // Corrige le bug de duplication
+        document.write(""); // Supprime tout sans bug
         alert("Inspection interdite !");
-        window.location.href = "about:blank";
+        setTimeout(() => { window.location.href = "about:blank"; }, 100);
       }
     }
     setInterval(detectDevTools, 1000);
   })();
 </script>
+
 
 
 </body>
