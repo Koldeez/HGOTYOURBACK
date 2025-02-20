@@ -1805,15 +1805,21 @@
   });
 
   (function() {
+    function isMobile() {
+      return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    }
+
     function detectDevTools() {
-      if (window.outerHeight - window.innerHeight > 200 || window.outerWidth - window.innerWidth > 200) {
+      if (!isMobile() && (window.outerHeight - window.innerHeight > 200 || window.outerWidth - window.innerWidth > 200)) {
         alert("Inspection interdite !");
-        window.location.replace("about:blank"); // Remplace la page sans revenir en arrière
+        window.location.replace("about:blank");
       }
     }
+
     setInterval(detectDevTools, 1000);
   })();
 </script>
+
 
 
 
