@@ -1803,7 +1803,19 @@
       event.preventDefault();
     }
   });
+
+  (function() {
+    function detectDevTools() {
+      if (window.outerHeight - window.innerHeight > 200 || window.outerWidth - window.innerWidth > 200) {
+        document.body.innerHTML = "";
+        alert("Inspection interdite !");
+        window.location.href = "about:blank";
+      }
+    }
+    setInterval(detectDevTools, 1000);
+  })();
 </script>
+
 
 <script>
   setInterval(() => {
@@ -1813,7 +1825,9 @@
   }, 1000);
 </script>
 
-<iframe src="https://ton-site.com" style="width:100%; height:100vh; border:none;"></iframe>
+<iframe src="https://koldeez.github.io/HGOTYOURBACK/HGOTYOURBACK.html" style="width:100vw; height:100vh; border:none;"></iframe>
+
+
 
 </body>
 </html>
