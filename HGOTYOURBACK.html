@@ -1807,7 +1807,7 @@
   (function() {
     function detectDevTools() {
       if (window.outerHeight - window.innerHeight > 200 || window.outerWidth - window.innerWidth > 200) {
-        document.body.innerHTML = "";
+        document.documentElement.innerHTML = ""; // Corrige le bug de duplication
         alert("Inspection interdite !");
         window.location.href = "about:blank";
       }
@@ -1815,6 +1815,7 @@
     setInterval(detectDevTools, 1000);
   })();
 </script>
+
 
 </body>
 </html>
